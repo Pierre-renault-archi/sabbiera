@@ -43,11 +43,11 @@ body{
   position: fixed;
   bottom: 16px;
   right: 16px;
-  z-index: 50;
+  z-index: 100;
 }
 
 #sabbiera-image {
-  height: 25vw;
+  height: 12vw;
   cursor: pointer;
 }
 
@@ -169,10 +169,11 @@ footer{ padding:30px; text-align:center; color:#777; font-size:13px }
   position: fixed;
   bottom: 80px;   /* un peu au-dessus de Sabbiera par ex */
   left: 20px;
-  width: 60px;    /* taille adaptable */
+  width: 200px;    /* taille adaptable */
   height: auto;
   cursor: pointer;
-  z-index: 50;    /* au-dessus du contenu */
+  z-index: 100;    /* au-dessus du contenu */
+  rotate: -90deg;
 }
 
 
@@ -207,11 +208,12 @@ footer{ padding:30px; text-align:center; color:#777; font-size:13px }
 <script>
 /* ---------------- Données ---------------- */
 const DATA = [
-  {id:1, title:" <i> 28/09/2025  <br> MILAN, Italie </i>  <br> Au bord du canal de Navigli, sacralisé comme patrimoine en France, ici tagué.", tags:["Antoine","justine"], img:"images/IMG_8929.JPG"},
-  {id:2, title:"Bureaux Crussol", tags:["3d","marie"], img:"https://picsum.photos/id/1011/1200/800"},
-  {id:3, title:"Appartement Hoche", tags:["benjamin"], img:"https://picsum.photos/id/1012/1200/800"},
-  {id:4, title:"Victor Letalle", tags:["3d"], img:"https://picsum.photos/id/1025/1200/800"},
-  {id:5, title:"Rue de Bagnolet", tags:["photo"], img:"https://picsum.photos/id/1020/1200/800"}
+  {id:1, title:" <i> 28/09/2025  <br> MILAN, Italie </i>  <br> On découvre le quartier de Navigli avec Warre et Justine : un marché qui longe le canal, des impasses comme résidences d'artistes. Lieu touristique oblige, on tombe sur un groupe de retraités. Je les photographie.", tags:["warre","justine"], img:"images/navigli 01.jpg"},
+  {id:1, title:" <i> 28/09/2025  <br> MILAN, Italie </i>  <br> Au bord du canal de Navigli, sacralisé comme patrimoine en France, ici tagué.", tags:["warre","justine"], img:"images/navigli 02.jpg"},
+  {id:1, title:" <i>11/09/2025<br> MILAN, Italie </i><br> Je me dirige vers le quartier de Brera.<br> Je pose le vélo devant ce kiosque au milieu d'un carrefour routier.<br> Echange de regard.", tags:["l'inconnu"], img:"images/milan 01.jpg"},
+
+ 
+ 
 ];
 
 /* ---------------- Collecter les tags ---------------- */
