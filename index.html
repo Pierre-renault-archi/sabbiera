@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Archive — Exemple (3D / Photo)</title>
+<title>sabberia</title>
 
 <style>
 :root{
@@ -16,11 +16,12 @@
 
 body{
   margin:0;
-  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-  background:var(--bg);
+  font-family:   Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, 'Times New Roman', Times, serif  ;
   color:var(--text);
   -webkit-font-smoothing:antialiased;
   -moz-osx-font-smoothing:grayscale;
+    overflow-x: hidden;   /* empêche tout scroll horizontal */
+  max-width: 100%;
 }
 
 /* ---------------- Position des deux éléments fixes ---------------- */
@@ -30,7 +31,7 @@ body{
   left: 16px;
   z-index: 50;
   display: flex;
-  gap: 8px;
+  gap: 200px;
   flex-wrap: wrap;
   transition: opacity 0.3s ease;
 }
@@ -52,6 +53,7 @@ body{
   cursor: pointer;
 }
 
+
 .chip{
   display:inline-flex;
   align-items:center;
@@ -64,7 +66,10 @@ body{
   user-select:none;
   border:1px solid #e93d4d;
   font-size:14px;
+  margin: 2px;
 }
+
+
 .chip.active{ background:#e93d4d; color:#fff; border-color:rgba(170,80,137,.15) }
 .chip .count{ font-weight:700; opacity:.9; font-size:12px }
 
@@ -130,6 +135,7 @@ main{
   word-wrap: break-word; /* casse les mots longs si nécessaire */
   overflow-wrap: break-word;
   white-space: normal;
+  margin-right: 10px;
 
   max-width: 80%;
   white-space: normal;
@@ -139,7 +145,7 @@ main{
   font-size:14px;
   position:absolute;
   bottom:50px;
-  left:5px;
+  left:30px;
   font-size:14px;
   color:#fff;
   opacity:1;
@@ -174,9 +180,37 @@ footer{ padding:30px; text-align:center; color:#777; font-size:13px }
   height: auto;
   cursor: pointer;
   z-index: 100;    /* au-dessus du contenu */
-  rotate: -90deg;
+  rotate: 90deg;
 }
 
+a {
+ color: #e93d4d;
+}
+
+.center-text {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: left;
+  color: #e93d4d;
+  padding: 20px;
+  border-radius: 12px;
+  z-index: 60; /* au-dessus du reste */
+  max-width: 20%;   /* ✅ colonne réduite, ex : 40% de la largeur de l’écran */
+  font-family: 'Times New Roman', Times, serif;
+  font-size: 20px;
+  
+}
+/* 📱 Sur téléphone (max 600px de large), on élargit la colonne */
+@media (max-width: 600px) {
+  .center-text {
+    max-width: 80%;  /* prend presque tout l’écran sur mobile */
+    font-size: 14px; /* texte un peu plus petit si besoin */
+    font-family: 'Times New Roman', Times, serif;
+
+  }
+}
 
 
 
@@ -193,9 +227,21 @@ footer{ padding:30px; text-align:center; color:#777; font-size:13px }
   <img src="images/pratiq.png" alt="Aller au lien" class="extra-image">
 </a>
 
+
+
+
 <!-- Sabbiera fixe en bas à droite -->
 <div id="sabbieraContainer">
   <img id="sabbiera-image" src="images/sabbiera2.2.png" alt="Sabbiera">
+</div>
+
+
+<div id="centerText" class="center-text">
+['sab'bjɛra] n.f 
+<br>spazio circoscritto contenente sabbia, situato nei parchi per giochi da spiaggia
+<br>
+<br>Exercice photographique, d'écriture machine et graphique pour partager ma mobilité en Italie. 
+
 </div>
 
 <main>
@@ -245,14 +291,14 @@ function renderChips(){
   filtersEl.innerHTML='';
   const allChip = document.createElement('div');
   allChip.className='chip'+(activeFilters.length===0?' active':'');
-  allChip.textContent='Tous';
+  allChip.textContent='tutti';
   allChip.onclick=()=>{activeFilters=[]; update();};
   filtersEl.appendChild(allChip);
 
   Object.keys(tagMap).sort().forEach(tag=>{
     const c=document.createElement('div');
     c.className='chip'+(activeFilters.includes(tag)?' active':'');
-    c.innerHTML=`<span>${tag}</span> <span class="count">${tagMap[tag]}</span>`;
+    c.innerHTML=`<span>${tag}</span> `;
     c.onclick=()=>{
       if(activeFilters.includes(tag)) activeFilters=activeFilters.filter(t=>t!==tag);
       else activeFilters.push(tag);
@@ -321,6 +367,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const sabbieraImage = document.getElementById('sabbiera-image');
   const filtersHeader = document.getElementById('filtersHeader');
   const extraLink = document.getElementById('extraLink'); // 🔹 nouvel élément fixe
+  const centerText = document.getElementById('centerText'); // 🔹 nouvel élément
 
   sabbieraImage.setAttribute('aria-expanded', 'true');
 
@@ -332,6 +379,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // 🔹 cacher/afficher aussi l’image-lien
     if (extraLink) {
       extraLink.style.display = collapsed ? 'none' : 'block';
+    }
+    if (centerText) {
+      centerText.style.display = collapsed ? "none" : "block";
     }
   });
 });
