@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Archive — Exemple (3D / Photo)</title>
+
+<style>
+:root{
+  --bg:#ffffff;
+  --text:#111;
+  --gap:8px;
+}
+*{box-sizing:border-box}
+
+
+body{
+  margin:0;
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  background:var(--bg);
+  color:var(--text);
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+}
+
+/* ---------------- Position des deux éléments fixes ---------------- */
+#filtersHeader {
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  z-index: 50;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  transition: opacity 0.3s ease;
+}
+#filtersHeader.filters-collapsed {
+  opacity:0;
+  pointer-events:none;
+}
+
+#sabbieraContainer {
+  position: fixed;
+  bottom: 16px;
+  right: 16px;
+  z-index: 50;
+}
+
+#sabbiera-image {
+  height: 25vw;
+  cursor: pointer;
+}
+
+.chip{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:6px 12px;
+  border-radius:999px;
+  background:transparent;
+  color:#c40e0e;
+  cursor:pointer;
+  user-select:none;
+  border:1px solid #c40e0e;
+  font-size:14px;
+}
+.chip.active{ background:#c40e0e; color:#fff; border-color:rgba(170,80,137,.15) }
+.chip .count{ font-weight:700; opacity:.9; font-size:12px }
+
+main{ 
+  position: relative;
+  width: 100%;
+  margin: 0;
+  padding-top: 5px;
+}
+
+.grid{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  width:100%;
+  gap:6px;
+}
+
+.card{
+  position:relative;
+  margin:0;
+  cursor:pointer;
+  display:flex;
+  justify-content:center;
+}
+
+.thumb {
+  display:block;
+  width:auto;
+  height:auto;
+  object-fit:contain;
+  background:#000;
+  user-select:none;
+  -webkit-user-drag:none;
+  transition:opacity 0.3s ease;
+}
+
+.overlay {
+  position:absolute;
+  inset:0;
+  background:rgba(247, 195, 195, 0.6);
+  color:#fff;
+  display:flex;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity 0.3s ease;
+  padding:20px;
+}
+.card.show-overlay .overlay {
+  opacity:1;
+  pointer-events:auto;
+}
+.overlay .title {
+  font-size:18px;
+  position:absolute;
+  top:50px;
+  left:100px;
+  font-size:18px;
+  font-weight:600;
+  color:#fff;
+   max-width: 90%;       /* au maximum 90% de la largeur de l’image */
+  width: auto;           /* prend la place nécessaire */
+  word-wrap: break-word; /* casse les mots longs si nécessaire */
+  overflow-wrap: break-word;
+  white-space: normal;
+
+  max-width: 80%;
+  white-space: normal;
+  word-wrap: break-word;
+}
+.overlay .tags {
+  font-size:14px;
+  position:absolute;
+  bottom:50px;
+  left:5px;
+  font-size:14px;
+  color:#fff;
+  opacity:0.5;
+}
+.overlay .download-btn{
+  margin-top:10px;
+  padding:6px 12px;
+  background:transparent;
+  color:#a81b1b;
+  border-radius:6px;
+  text-decoration:none;
+  font-size:14px;
+    border:1px solid #c40e0e;
+    position:absolute;
+  bottom:100px;
+  right:150px;
+  padding:6px 12px;
+  border-radius:6px;
+
+}
+.overlay .download-btn:hover{
+  background: transparent;
+}
+
+footer{ padding:30px; text-align:center; color:#777; font-size:13px }
+
+.extra-image {
+  position: fixed;
+  bottom: 80px;   /* un peu au-dessus de Sabbiera par ex */
+  left: 20px;
+  width: 60px;    /* taille adaptable */
+  height: auto;
+  cursor: pointer;
+  z-index: 50;    /* au-dessus du contenu */
+}
+
+
+
+
+</style>
+</head>
+<body>
+
+<!-- Header fixe pour filtres -->
+<header id="filtersHeader">
+  <div class="filters" id="filters"></div>
+</header>
+
+<a href="https://pierre-renault-archi.github.io/pratiq/" target="_blank" id="extraLink">
+  <img src="images/pratiq.png" alt="Aller au lien" class="extra-image">
+</a>
+
+<!-- Sabbiera fixe en bas à droite -->
+<div id="sabbieraContainer">
+  <img id="sabbiera-image" src="images/sabbiera2.2.png" alt="Sabbiera">
+</div>
+
+<main>
+  <section class="grid" id="grid"></section>
+</main>
+
+<footer>
+  2025 Pierre Renault |  <a href="https://www.linkedin.com/in/pierre-renault-54a83a268/">linkedin</a> |  <a href="https://www.instagram.com/pratiq___/?igsh=cmxneHA1MnV4aDlj&utm_source=qr">instagram</a>
+</footer>
+
+<script>
+/* ---------------- Données ---------------- */
+const DATA = [
+  {id:1, title:" <i> 28/09/2025  <br> MILAN, Italie </i>  <br> Au bord du canal de Navigli, sacralisé comme patrimoine en France, ici tagué.", tags:["Antoine","justine"], img:"images/IMG_8929.JPG"},
+  {id:2, title:"Bureaux Crussol", tags:["3d","marie"], img:"https://picsum.photos/id/1011/1200/800"},
+  {id:3, title:"Appartement Hoche", tags:["benjamin"], img:"https://picsum.photos/id/1012/1200/800"},
+  {id:4, title:"Victor Letalle", tags:["3d"], img:"https://picsum.photos/id/1025/1200/800"},
+  {id:5, title:"Rue de Bagnolet", tags:["photo"], img:"https://picsum.photos/id/1020/1200/800"}
+];
+
+/* ---------------- Collecter les tags ---------------- */
+function collectTags(data){
+  const map = {};
+  data.forEach(item=>{
+    item.tags.forEach(t=>{
+      map[t] = (map[t]||0)+1;
+    });
+  });
+  return map;
+}
+const tagMap = collectTags(DATA);
+
+const filtersEl = document.getElementById('filters');
+const gridEl = document.getElementById('grid');
+let activeFilters = [];
+
+/* Lire les filtres URL */
+(function readFiltersFromURL(){
+  const params = new URLSearchParams(location.search);
+  const f = params.get('filters');
+  if(f) activeFilters = f.split(',').map(s=>s.trim()).filter(Boolean);
+})();
+
+/* Construire les chips */
+function renderChips(){
+  filtersEl.innerHTML='';
+  const allChip = document.createElement('div');
+  allChip.className='chip'+(activeFilters.length===0?' active':'');
+  allChip.textContent='Tous';
+  allChip.onclick=()=>{activeFilters=[]; update();};
+  filtersEl.appendChild(allChip);
+
+  Object.keys(tagMap).sort().forEach(tag=>{
+    const c=document.createElement('div');
+    c.className='chip'+(activeFilters.includes(tag)?' active':'');
+    c.innerHTML=`<span>${tag}</span> <span class="count">${tagMap[tag]}</span>`;
+    c.onclick=()=>{
+      if(activeFilters.includes(tag)) activeFilters=activeFilters.filter(t=>t!==tag);
+      else activeFilters.push(tag);
+      update();
+    };
+    filtersEl.appendChild(c);
+  });
+}
+
+/* Filtrage */
+function matchesFilters(item){
+  if(activeFilters.length===0) return true;
+  return activeFilters.every(f=>item.tags.includes(f));
+}
+
+/* Rendu des cartes avec largeur uniforme et overlay avec téléchargement */
+function renderGrid(){
+  gridEl.innerHTML='';
+  const visible = DATA.filter(matchesFilters);
+  if(visible.length===0) return;
+
+  // Étape 1 : charger toutes les images pour récupérer ratios
+  let minWidth = Infinity;
+  const promises = visible.map(item => new Promise(resolve=>{
+    const img = new Image();
+    img.src=item.img;
+    img.onload=()=>{
+      const widthForMaxHeight = (img.width / img.height) * window.innerHeight * 0.95;
+      if(widthForMaxHeight < minWidth) minWidth = widthForMaxHeight;
+      resolve();
+    };
+  }));
+
+  // Étape 2 : après chargement de toutes les images
+  Promise.all(promises).then(()=>{
+    visible.forEach(item=>{
+      const a = document.createElement('article');
+      a.className='card';
+      a.innerHTML=`
+        <img class="thumb" src="${item.img}" alt="${item.title}" style="width:${minWidth}px;">
+        <div class="overlay">
+          <div class="title">${item.title}</div>
+          <div class="tags">${item.tags.map(t=>`#${t}`).join(' ')}</div>
+          <a class="download-btn" href="${item.img}" download="${item.title.replace(/\s+/g,'_')}.jpg">Télécharger</a>
+        </div>
+      `;
+      a.addEventListener('click',()=>a.classList.toggle('show-overlay'));
+      gridEl.appendChild(a);
+    });
+  });
+}
+
+/* Mise à jour */
+function update(push=true){
+  renderChips();
+  renderGrid();
+  const params = new URLSearchParams(location.search);
+  if(activeFilters.length) params.set('filters',activeFilters.join(','));
+  else params.delete('filters');
+  const newurl = location.pathname + (params.toString()? '?'+params.toString():'');
+  if(push) history.replaceState(null,'',newurl);
+}
+
+/* Toggle Sabbiera pour masquer/afficher le menu des filtres */
+document.addEventListener('DOMContentLoaded', () => {
+  const sabbieraImage = document.getElementById('sabbiera-image');
+  const filtersHeader = document.getElementById('filtersHeader');
+  const extraLink = document.getElementById('extraLink'); // 🔹 nouvel élément fixe
+
+  sabbieraImage.setAttribute('aria-expanded', 'true');
+
+  sabbieraImage.addEventListener('click', () => {
+    filtersHeader.classList.toggle('filters-collapsed');
+    const collapsed = filtersHeader.classList.contains('filters-collapsed');
+    sabbieraImage.setAttribute('aria-expanded', String(!collapsed));
+
+    // 🔹 cacher/afficher aussi l’image-lien
+    if (extraLink) {
+      extraLink.style.display = collapsed ? 'none' : 'block';
+    }
+  });
+});
+
+
+
+/* Initialisation */
+update(false);
+</script>
+</body>
+</html>
