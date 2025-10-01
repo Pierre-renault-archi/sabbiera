@@ -214,6 +214,13 @@ a {
 
   }
 }
+.no-result {
+  text-align: center;
+  color: #e93d4d;
+  font-family: 'Times New Roman', serif;
+  font-size: 20px;
+  padding: 40px 20px;
+}
 
 
 
@@ -273,7 +280,7 @@ const DATA = [
   {id:1, title:" <i>12/09/2025<br> [BELLAGIO, Italia] </i><br> ", tags:["justine", "sixtine"], img:"images/bellagio 02.jpg"},
   {id:1, title:" <i>12/09/2025<br> [BELLAGIO, Italia] </i><br> ", tags:["justine", "sixtine"], img:"images/bellagio 01.jpg"},
   {id:1, title:" <i>12/09/2025<br> [BELLAGIO, Italia] </i><br> ", tags:["justine", "sixtine", "l'inconnu"], img:"images/bellagio 04.jpg"},
-  {id:1, title:" <i>12/09/2025<br> [VARENNA, Italia] </i><br> ", tags:["justine", "sixtine"], img:"images/varenna 01.jpg"},
+  {id:1, title:" <i>12/09/2025<br> [VARENNA, Italia] </i><br> ", tags:["justine", "sixtine" ], img:"images/varenna 01.jpg"},
  
 
   {id:1, title:" <i>11/09/2025<br> [MILANO, Italia] </i><br> Je me dirige vers le quartier de Brera.<br> Je pose le vélo devant ce kiosque au milieu d'un carrefour routier.<br> Echange de regard.", tags:["l'inconnu"], img:"images/milan 01.jpg"},
@@ -343,7 +350,7 @@ function renderGrid(){
   if (visible.length === 0) {
     var no = document.createElement('div');
     no.className = 'no-result';
-    no.textContent = 'Aucune image ne correspond à votre sélection.';
+    no.textContent = 'Auncun moment passé avec ces personnes réunies, ou non immortalisé du moins.';
     gridEl.appendChild(no);
     return;
   }
