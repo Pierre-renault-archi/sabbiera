@@ -241,7 +241,7 @@ a {
 
 <div id="centerText" class="center-text">
 ['sab'bjɛra] n.f 
-<br>spazio circoscritto contenente sabbia, situato nei parchi per giochi da spiaggia
+<br>spazio circoscritto contenente sabbia, situato nei parchi per giochi da spiaggia. 
 <br>
 <br>Exercice photographique, d'écriture machine et graphique pour partager ma mobilité en Italie. 
 
@@ -265,12 +265,19 @@ a {
 <script>
 /* ---------------- Données ---------------- */
 const DATA = [
-  {id:1, title:" <i> 28/09/2025  <br> MILAN, Italie </i>  <br> On découvre le quartier de Navigli avec Warre et Justine : un marché qui longe le canal, des impasses comme résidences d'artistes. Lieu touristique oblige, on tombe sur un groupe de retraités. Je les photographie.", tags:["warre","justine"], img:"images/navigli 01.jpg"},
-  {id:1, title:" <i> 28/09/2025  <br> MILAN, Italie </i>  <br> Au bord du canal de Navigli, sacralisé comme patrimoine en France, ici tagué.", tags:["warre","justine"], img:"images/navigli 02.jpg"},
-  {id:1, title:" <i>11/09/2025<br> MILAN, Italie </i><br> Je me dirige vers le quartier de Brera.<br> Je pose le vélo devant ce kiosque au milieu d'un carrefour routier.<br> Echange de regard.", tags:["l'inconnu"], img:"images/milan 01.jpg"},
+  {id:1, title:" <i> 28/09/2025  <br> [MILANO, Italia] </i>  <br> On découvre le quartier de Navigli avec Warre et Justine : un marché qui longe le canal, des impasses comme résidences d'artistes. Lieu touristique oblige, on tombe sur un groupe de retraités. Je les photographie.", tags:["warre","justine"], img:"images/navigli 01.jpg"},
+  {id:1, title:" <i> 28/09/2025  <br> [MILANO, Italia] </i>  <br> Au bord du canal de Navigli, sacralisé comme patrimoine en France, ici tagué.", tags:["warre","justine"], img:"images/navigli 02.jpg"},
 
+  {id:1, title:" <i>12/09/2025<br> [VARENNA, Italia] </i><br> ", tags:["justine", "sixtine"], img:"images/varenna 02.jpg"},
+  {id:1, title:" <i>12/09/2025<br> [BELLAGIO, Italia] </i><br> ", tags:["justine", "sixtine"], img:"images/bellagio 03.jpg"},
+  {id:1, title:" <i>12/09/2025<br> [BELLAGIO, Italia] </i><br> ", tags:["justine", "sixtine"], img:"images/bellagio 02.jpg"},
+  {id:1, title:" <i>12/09/2025<br> [BELLAGIO, Italia] </i><br> ", tags:["justine", "sixtine"], img:"images/bellagio 01.jpg"},
+  {id:1, title:" <i>12/09/2025<br> [BELLAGIO, Italia] </i><br> ", tags:["justine", "sixtine", "l'inconnu"], img:"images/bellagio 04.jpg"},
+  {id:1, title:" <i>12/09/2025<br> [VARENNA, Italia] </i><br> ", tags:["justine", "sixtine"], img:"images/varenna 01.jpg"},
  
- 
+
+  {id:1, title:" <i>11/09/2025<br> [MILANO, Italia] </i><br> Je me dirige vers le quartier de Brera.<br> Je pose le vélo devant ce kiosque au milieu d'un carrefour routier.<br> Echange de regard.", tags:["l'inconnu"], img:"images/milan 01.jpg"},
+
 ];
 
 /* ---------------- Collecter les tags ---------------- */
@@ -324,38 +331,90 @@ function matchesFilters(item){
   return activeFilters.every(f=>item.tags.includes(f));
 }
 
-/* Rendu des cartes avec largeur uniforme et overlay avec téléchargement */
 function renderGrid(){
-  gridEl.innerHTML='';
+  // debug
+  console.log('renderGrid -> activeFilters:', activeFilters);
+
+  // filtrer et vider la grille
   const visible = DATA.filter(matchesFilters);
-  if(visible.length===0) return;
+  gridEl.innerHTML = '';
 
-  // Étape 1 : charger toutes les images pour récupérer ratios
-  let minWidth = Infinity;
-  const promises = visible.map(item => new Promise(resolve=>{
-    const img = new Image();
-    img.src=item.img;
-    img.onload=()=>{
-      const widthForMaxHeight = (img.width / img.height) * window.innerHeight * 0.95;
-      if(widthForMaxHeight < minWidth) minWidth = widthForMaxHeight;
-      resolve();
-    };
-  }));
+  // cas : aucun résultat
+  if (visible.length === 0) {
+    var no = document.createElement('div');
+    no.className = 'no-result';
+    no.textContent = 'Aucune image ne correspond à votre sélection.';
+    gridEl.appendChild(no);
+    return;
+  }
 
-  // Étape 2 : après chargement de toutes les images
-  Promise.all(promises).then(()=>{
-    visible.forEach(item=>{
-      const a = document.createElement('article');
-      a.className='card';
-      a.innerHTML=`
-        <img class="thumb" src="${item.img}" alt="${item.title}" style="width:${minWidth}px;">
-        <div class="overlay">
-          <div class="title">${item.title}</div>
-          <div class="tags">${item.tags.map(t=>`#${t}`).join(' ')}</div>
-          <a class="download-btn" href="${item.img}" download="${item.title.replace(/\s+/g,'_')}.jpg">Télécharger</a>
-        </div>
-      `;
-      a.addEventListener('click',()=>a.classList.toggle('show-overlay'));
+  // calculer la minWidth en chargeant les images (sécurisé)
+  var minWidth = Infinity;
+  var promises = visible.map(function(item){
+    return new Promise(function(resolve){
+      var img = new Image();
+      img.src = item.img;
+      img.onload = function(){
+        if (img.naturalWidth && img.naturalHeight) {
+          var widthForMaxHeight = (img.naturalWidth / img.naturalHeight) * window.innerHeight * 0.95;
+          if (widthForMaxHeight < minWidth) minWidth = widthForMaxHeight;
+        }
+        resolve();
+      };
+      img.onerror = function(){
+        // ne bloque pas le rendu si l'image est introuvable
+        resolve();
+      };
+      // sécurité : si on n'a ni load ni error
+      setTimeout(resolve, 1000);
+    });
+  });
+
+  Promise.all(promises).then(function(){
+    if (!isFinite(minWidth)) {
+      minWidth = Math.min(window.innerWidth * 0.9, 800);
+    }
+
+    visible.forEach(function(item){
+      var a = document.createElement('article');
+      a.className = 'card';
+
+      // image
+      var imgEl = document.createElement('img');
+      imgEl.className = 'thumb';
+      imgEl.src = item.img;
+      imgEl.alt = item.title || '';
+      imgEl.style.width = minWidth + 'px';
+      imgEl.onerror = function(){ imgEl.style.display = 'none'; };
+
+      // overlay
+      var overlay = document.createElement('div');
+      overlay.className = 'overlay';
+
+      var titleDiv = document.createElement('div');
+      titleDiv.className = 'title';
+      // item.title contient parfois des <br> ou <i>, on veut autoriser le HTML
+      titleDiv.innerHTML = item.title || '';
+
+      var tagsDiv = document.createElement('div');
+      tagsDiv.className = 'tags';
+      tagsDiv.textContent = (item.tags || []).map(function(t){ return '#' + t; }).join(' ');
+
+      var downloadBtn = document.createElement('a');
+      downloadBtn.className = 'download-btn';
+      downloadBtn.href = item.img;
+      downloadBtn.download = String((item.title || 'image').replace(/\s+/g,'_')) + '.jpg';
+      downloadBtn.textContent = 'Télécharger';
+
+      overlay.appendChild(titleDiv);
+      overlay.appendChild(tagsDiv);
+      overlay.appendChild(downloadBtn);
+
+      a.appendChild(imgEl);
+      a.appendChild(overlay);
+
+      a.addEventListener('click', function(){ a.classList.toggle('show-overlay'); });
+
       gridEl.appendChild(a);
     });
   });
