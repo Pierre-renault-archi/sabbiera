@@ -224,7 +224,15 @@ a {
   margin-top: 10vw;
 }
 
+@keyframes blinkEffect {
+  0% { opacity: 1; }
+  50% { opacity: 0.2; }
+  100% { opacity: 1; }
+}
 
+.is-blinking {
+  animation: blinkEffect 1.5s infinite ease-in-out;
+}
 
 </style>
 </head>
@@ -244,7 +252,7 @@ a {
 
 <!-- Sabbiera fixe en bas à droite -->
 <div id="sabbieraContainer">
-  <img id="sabbiera-image" src="images/sabbiera2.2.png" alt="Sabbiera">
+  <img id="sabbiera-image" src="images/sabbiera2.2.png" alt="Sabbiera" class="is-blinking">
 </div>
 
 
@@ -274,6 +282,14 @@ a {
 <script>
 /* ---------------- Données ---------------- */
 const DATA = [
+
+  {id:1, title:" <i> 07/12/2025  <br> [GALLARATESE - MILAN, Italia] </i>  <br> ", tags:["pierre","justine"], img:"images/Gallaratese 03.jpg"},
+  {id:1, title:" <i> 07/12/2025  <br> [GALLARATESE - MILAN, Italia] </i>  <br> ", tags:["pierre","justine"], img:"images/Gallaratese 02.jpg"},
+  {id:1, title:" <i> 07/12/2025  <br> [GALLARATESE - MILAN, Italia] </i>  <br> ", tags:["pierre","justine"], img:"images/Gallaratese 06.jpg"},
+  {id:1, title:" <i> 07/12/2025  <br> [GALLARATESE - MILAN, Italia] </i>  <br> ", tags:["pierre","justine"], img:"images/Gallaratese 04.jpg"},
+  {id:1, title:" <i> 07/12/2025  <br> [GALLARATESE - MILAN, Italia] </i>  <br> ", tags:["pierre","justine"], img:"images/Gallaratese 05.jpg"},
+  {id:1, title:" <i> 07/12/2025  <br> [GALLARATESE - MILAN, Italia] </i>  <br> ", tags:["pierre","justine"], img:"images/Gallaratese 01.jpg"},
+
 
   {id:1, title:" <i> 15/11/2025  <br> [SIRMIONE, Italia] </i>  <br> ", tags:["pierre","justine"], img:"images/Sirmione 01.jpg"},
   {id:1, title:" <i> 15/11/2025  <br> [SIRMIONE, Italia] </i>  <br> ", tags:["pierre","justine"], img:"images/Sirmione 03.jpg"},
@@ -484,24 +500,32 @@ function update(push=true){
 document.addEventListener('DOMContentLoaded', () => {
   const sabbieraImage = document.getElementById('sabbiera-image');
   const filtersHeader = document.getElementById('filtersHeader');
-  const extraLink = document.getElementById('extraLink'); // 🔹 nouvel élément fixe
-  const centerText = document.getElementById('centerText'); // 🔹 nouvel élément
+  const extraLink = document.getElementById('extraLink'); 
+  const centerText = document.getElementById('centerText');
 
   sabbieraImage.setAttribute('aria-expanded', 'true');
 
-  sabbieraImage.addEventListener('click', () => {
+sabbieraImage.addEventListener('click', () => {
     filtersHeader.classList.toggle('filters-collapsed');
     const collapsed = filtersHeader.classList.contains('filters-collapsed');
     sabbieraImage.setAttribute('aria-expanded', String(!collapsed));
 
-    // 🔹 cacher/afficher aussi l’image-lien
+    if (collapsed) {
+        // ACTION : On fige l'animation là où elle en est
+        sabbieraImage.style.animationPlayState = 'paused';
+    } else {
+        // ACTION : On relance l'animation exactement au même point
+        sabbieraImage.style.animationPlayState = 'running';
+    }
+
+    // Gestion des autres éléments
     if (extraLink) {
       extraLink.style.display = collapsed ? 'none' : 'block';
     }
     if (centerText) {
       centerText.style.display = collapsed ? "none" : "block";
     }
-  });
+});
 });
 
 
